@@ -30,7 +30,7 @@ class Validator:
             if next_state == None:
                 next_state = "{q25}"
 
-            transitions.appennd({
+            transitions.append({
                 "step": step,
                 "symbol": symbol,
                 "current_state": current_state,
