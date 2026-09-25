@@ -1,11 +1,28 @@
 import dearpygui.dearpygui as dpg
 from src.automata.dfa import dfa
 from src.validator.validator import Validator
+from pathlib import Path
+
+dpg.create_context()
 
 validator = Validator(dfa)
+dpg.load_image("assets/GG.png")
 
-def print_value(sender, app_data):
-    print("Input text: ", app_data)
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+LOGO_PATH = BASE_DIR / "assets" / "GG_fixed.png"
+
+
+print("Logo path:", LOGO_PATH)
+print("Logo exists:", LOGO_PATH.exists())
+
+
+width, height, channels, data = dpg.load_image(str(LOGO_PATH))
+
+with dpg.texture_registry(show=False):
+    dpg.add_static_texture(
+        width=width, height=height, default_value=data, tag="logo_texture"
+    )
 
 def validate_demo():
     code = dpg.get_value("code_input").strip()
@@ -31,6 +48,7 @@ def validate_demo():
     )
 
     show_transitions(result["transitions"])
+    transition_diagram(result['transitions'])
 
 
 def show_transitions(transitions):
@@ -40,6 +58,7 @@ def show_transitions(transitions):
         "Step      Symbol        Current State      Next State",
         parent="transition_container"
     )
+
     dpg.add_separator(parent="transition_container")
 
     for transition in transitions:
@@ -53,7 +72,18 @@ def show_transitions(transitions):
             parent="transition_container"
         )
 
-dpg.create_context()
+def transition_diagram(transitions):
+    dpg.delete_item("transition_visual", children_only=True)
+
+    for transition in transitions:
+        current_state = transition["current_state"]
+        symbol = transition["symbol"]
+        next_state = transition["next_state"]
+
+        dpg.add_text(
+            f"{current_state}---{symbol}--->{next_state}",
+            parent="transition_visual"
+        )
 
 
 with dpg.font_registry():
@@ -151,24 +181,62 @@ with dpg.theme() as main_theme:
 with dpg.window(
     label="Secure Access Code Validation System",
     tag="main_window",
-    width=1300,
-    height=800,
-
+    
 ):
+    # don't delete this po
+    # with dpg.child_window(
+    #     tag="custom_title_bar",
+    #     width=-1,
+    #     height=45,
+    #     border=False,
+    #     no_scrollbar=True
+    # ):
 
+    #     with dpg.group(horizontal=True):
+
+    #         dpg.add_text(
+    #             "GG",
+    #             color=(13, 25, 42)
+    #         )
+
+    #         dpg.add_spacer(width=12)
+
+    #         dpg.add_text(
+    #             "SECURE ACCESS CODE VALIDATOR",
+    #             color=(13, 25, 42)
+    #         )
+
+    #         dpg.add_spacer(width=1)
+
+    #         dpg.add_button(
+    #             label="—",
+    #             width=35,
+    #             height=25,
+    #             callback=lambda: dpg.minimize_viewport()
+    #         )
+
+    #         dpg.add_button(
+    #             label="X",
+    #             width=35,
+    #             height=25,
+    #             callback=lambda: dpg.stop_dearpygui()
+    #         )
+    with dpg.group(horizontal=True):
+        dpg.add_image("logo_texture", width=50, height=50)
  
-    dpg.add_text(
-        "SECURE ACCESS CODE VALIDATION SYSTEM",
-        color=(50, 180, 255),
-        tag="title"
-    )
+        with dpg.group():
+            dpg.add_text(
+                "SECURE ACCESS CODE VALIDATION SYSTEM",
+                color=(50, 180, 255),
+                tag="title"
+            )
 
-    dpg.bind_item_font("title", title_font)
+            dpg.bind_item_font("title", title_font)
 
-    dpg.add_text(
-        "DFA-Based Pattern Recognition",
-        color=(150, 180, 210)
-    )
+            dpg.add_text(
+                "DFA-Based Pattern Recognition",
+                color=(150, 180, 210)
+            )
 
     dpg.add_separator()
 
@@ -178,7 +246,7 @@ with dpg.window(
 
 
         with dpg.child_window(
-            width=530,
+            width=540,
             height=400,
             border=True
         ):
@@ -237,12 +305,13 @@ with dpg.window(
                 tag="result_state"
             )
         
-        dpg.add_spacer(width=15)
+        dpg.add_spacer(width=1)
 
         with dpg.child_window(
-            width=530,
+            width=540,
             height=400,
-            border=True
+            border=True,
+            no_scrollbar=True
         ):
             dpg.add_text(
                 "DFA TRANSITION TRACE",
@@ -265,14 +334,25 @@ with dpg.window(
                 tag="transition_container",
                 width=-1,
                 height=300,
-                border=False
+                border=False,
+                
             ):
                 dpg.add_text(
                     "No validation performed yet."
                 )
 
+    dpg.add_spacer(height=1)
+    with dpg.child_window(
+        tag="transition_visual",
+        width=-1,
+        height=120,
+        border=True,
+    ):
+        dpg.add_text("Transition diagram")
+
 dpg.bind_theme(main_theme)
-dpg.create_viewport(title='Secure Access Code Validator', width=1150, height=600, resizable=False, x_pos=80, y_pos=50)
+dpg.create_viewport(title='Secure Access Code Validator', width=1170, height=725
+, resizable=False, decorated=True, x_pos=80, y_pos=1)
 dpg.set_viewport_clear_color((16, 18, 70))
 dpg.setup_dearpygui()
 dpg.show_viewport()
