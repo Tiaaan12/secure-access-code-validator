@@ -6,11 +6,8 @@ from pathlib import Path
 dpg.create_context()
 
 validator = Validator(dfa)
-dpg.load_image("assets/GG.png")
-
-print("Logo path:", LOGO_PATH)
-print("Logo exists:", LOGO_PATH.exists())
-
+BASE_DIR = Path(__file__).resolve().parents[2]
+LOGO_PATH = BASE_DIR / "assets" / "GG_fixed.png"
 
 width, height, channels, data = dpg.load_image(str(LOGO_PATH))
 
