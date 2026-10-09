@@ -18,14 +18,13 @@ with dpg.texture_registry(show=False):
 
 def validate_demo():
     code = dpg.get_value("code_input").strip()
-
     if code == "":
         dpg.set_value("result_title", "NO INPUT")
         dpg.set_value("result_message", "Please enter an access code.")
         dpg.set_value("result_state", "Final State: -")
-
+        show_transitions([])
+        transition_diagram([])
         return
-        
     result = validator.validate_code(code)
 
     if result['accepted']:
@@ -38,7 +37,6 @@ def validate_demo():
     dpg.set_value(
         "result_state", f"Final State: {result['final_state']}"
     )
-
     show_transitions(result["transitions"])
     transition_diagram(result['transitions'])
 
@@ -54,6 +52,8 @@ def show_transitions(transitions):
         borders_outerV=True,
         policy=dpg.mvTable_SizingStretchProp,
         width=-1,
+        height=230,
+        scrollY=True,
         tag="dfa_table",
         parent="transition_container"
     ):
@@ -356,7 +356,7 @@ with dpg.window(
             with dpg.child_window(
                 tag="transition_container",
                 width=-1,
-                height=300,
+                height=230,
                 border=False,
                 
             ):

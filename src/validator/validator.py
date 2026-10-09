@@ -1,5 +1,4 @@
 class Validator:
-
     def __init__(self, dfa):
         self.dfa = dfa
     
@@ -28,7 +27,10 @@ class Validator:
             next_state = self.dfa.transition(current_state, symbol)
 
             if next_state == None:
-                next_state = "{q25}"
+                if current_state =="{q20}":
+                    next_state = "{q20a}"
+                else:
+                    next_state = "{q25}"
 
             transitions.append({
                 "step": step,
